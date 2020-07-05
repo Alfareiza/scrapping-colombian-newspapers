@@ -1,10 +1,10 @@
-# Project Title
+# Scrapping Colombian Newspapers
 
 Scrapping information of Colombian newspapers
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+Repository that captures information from Colombian newspapers (list of newspapers), then generates a csv with all the information.
 
 ### Prerequisites
 
