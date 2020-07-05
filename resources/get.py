@@ -57,9 +57,6 @@ def generate_csv(news, links, url):
     print(df)
 
 
-DATA = ''
-
-
 def unifyresults(*tuplas):
     """
     Receive info from newsletter and unify them
@@ -69,17 +66,16 @@ def unifyresults(*tuplas):
     news = []
     links = []
     for tupla in tuplas:
-        for n in tupla[0]:
-            news.append(n)
-        for l in tupla[1]:
-            links.append(l)
+        for new in tupla[0]:
+            news.append(new)
+        for link in tupla[1]:
+            links.append(link)
     df = pd.DataFrame({'Noticias ': news, 'Links': links}, index=range(1, len(news) + 1))
     df.to_csv('all_news.csv', index=range(1, len(news) + 1))
     print(df)
     a = ''
     for str in news:
         a += str.lower() + ' '
-    DATA = a
     tokenized_word = word_tokenize(a)
     print(tokenized_word)
 
