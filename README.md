@@ -1,6 +1,6 @@
 # Scrapping Colombian Newspapers 
 
-Scrapping information of Colombian newspapers
+:shipit: Scrapping information of Colombian newspapers.
 
 ## Getting Started
 
