@@ -66,7 +66,7 @@ Add additional notes about how to deploy this on a live system
 
 All code follows PEP8, except for the lenght of line, which contains 120 characters. Every function /class/method/module must have docstrings.
 
-1. Fork the project and clone or project: git clone git@github.com:<your_user>/***********.git
+1. Fork the project and clone or project: git clone git@github.com:<your_user>/ScrappingColombianNewspapers.git
 2. Install pipenv: pip install pipenv
 3. Install the dependencies of dev: pipenv install -d
 4. Develop the feature with tests
