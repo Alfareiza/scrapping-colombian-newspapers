@@ -1,4 +1,4 @@
-from resources.get import *
+from resources import get
 
 DONT_INCLUDE = ['sesión', 'ANUNCIOS', 'registro', 'En video', 'SUSCRÍBETE']
 
@@ -7,20 +7,20 @@ def get_news(new, url):
     news, links = list(), list()
     for i, j in enumerate(new):
         if not any((True for x in DONT_INCLUDE if x in j.text)):
-            news.append(clean_str_new(j.text))
+            news.append(get.clean_str_new(j.text))
             if j.find_all('a'):
-                if url_analyse(url) in j.a['href']:
+                if get.url_analyse(url) in j.a['href']:
                     links.append(j.a['href'])
                 else:
                     links.append(url + j.a['href'])
             elif j.name == 'a':
-                if url_analyse(url) in j['href']:
+                if get.url_analyse(url) in j['href']:
                     links.append(j['href'])
                 else:
                     links.append(url + j['href'])
             else:
                 if j.parent['href']:
-                    if url_analyse(url) in j.parent['href']:
+                    if get.url_analyse(url) in j.parent['href']:
                         links.append(j.parent['href'])
                     else:
                         links.append(url + j.parent['href'])
@@ -29,7 +29,7 @@ def get_news(new, url):
 
 def elheraldo():
     url = 'https://www.elheraldo.co'
-    soup = get_html_site(url)
+    soup = get.get_html_site(url)
     # Get news from site according class 'titulo' in any tag
     new = soup.find_all(class_=['titulo'])
     result = get_news(new, url)
@@ -39,7 +39,7 @@ def elheraldo():
 
 def zonacero():
     url = 'https://www.zonacero.com/'
-    soup = get_html_site(url)
+    soup = get.get_html_site(url)
     new = soup.find_all("div", class_=['title'])
     result = get_news(new, url)
     # generate_csv(news, links, url)
@@ -48,7 +48,7 @@ def zonacero():
 
 def elpilon():
     url = 'https://www.elpilon.com.co'
-    soup = get_html_site(url)
+    soup = get.get_html_site(url)
     new = soup.find_all(class_=['land-see-post-title'])
     result = get_news(new, url)
     # generate_csv(news, links, url)
@@ -57,7 +57,7 @@ def elpilon():
 
 def eluniversal():
     url = 'https://www.eluniversal.com.co'
-    soup = get_html_site(url)
+    soup = get.get_html_site(url)
     new = soup.find_all("div", class_=['headline'])
     result = get_news(new, url)
     # generate_csv(news, links, url)
@@ -66,7 +66,7 @@ def eluniversal():
 
 def diariodelcesar():
     url = 'https://www.diariodelcesar.com/'
-    soup = get_html_site(url)
+    soup = get.get_html_site(url)
     new = soup.find_all("h2", class_=['title'])
     result = get_news(new, url)
     # generate_csv(news, links, url)
@@ -75,7 +75,7 @@ def diariodelcesar():
 
 def diariodelmagdalena():
     url = 'https://www.hoydiariodelmagdalena.com.co/'
-    soup = get_html_site(url)
+    soup = get.get_html_site(url)
     new = soup.find_all("h2", class_=['title'])
     result = get_news(new, url)
     # generate_csv(news, links, url)
@@ -84,14 +84,15 @@ def diariodelmagdalena():
 
 def diariodelnorte():
     url = 'https://www.diariodelnorte.net/'
-    soup = get_html_site(url)
+    soup = get.get_html_site(url)
     new = soup.find_all("h3", itemprop=['name'])
     result = get_news(new, url)
     # generate_csv(result[0], result[1], url)
     return result
 
 
-unifyresults(elheraldo(), zonacero(), elpilon(), eluniversal(), diariodelcesar(), diariodelmagdalena(), diariodelnorte())
+get.unifyresults(elheraldo(), zonacero(), elpilon(), eluniversal(),
+                 diariodelcesar(), diariodelmagdalena(), diariodelnorte())
 # print(soup.find_all.'title'.text)
 # print(soup.title.get_text())
 # get_new = int(input('=== Este programa retorna las noticias de los siguientes Portales === \n'
