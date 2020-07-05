@@ -8,7 +8,7 @@ Repository that captures information from Colombian newspapers (list of newspape
 
 ### Prerequisites
 
-Firstly install pipenv.
+Pip and Python installed and configured as environment variables. Then, install pipenv, run.
 
 ```
 pip install pipenv
@@ -16,15 +16,13 @@ pip install pipenv
 
 ### Installing
 
-A step by step series of examples that tell you how to get a development env running
-
-Say what the step will be
+Install pipenv in order to isolate your enviroment.
 
 ```
-Give the example
+pipenv install -d
 ```
 
-And repeat
+And then
 
 ```
 until finished
