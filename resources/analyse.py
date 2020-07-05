@@ -68,7 +68,8 @@ text = "Gobierno pide suspender venta presencial de electrodomésticos en días 
        "Lluvia y sol: cuidado con los cambios de clima  320 fiestas se intervinieron en Barranquilla en el fin de " \
        "semana  Explosiones en mercado de Afganistán dejan 23 víctimas fatales Saludo con la gorra en el 100mo " \
        "aniversario de Ligas Negras  La mujer que casi muere por el COVID-19 y por las mentiras de las redes  " \
-       "Los deseos de Gabo en los hombros de Jaime Abello  “Ha sido muy difícil todo esto”: dueños del ‘mandarizano’  " \
+       "Los deseos de Gabo en los hombros de Jaime Abello  “Ha sido muy difícil todo esto”: dueños " \
+       "del ‘mandarizano’  " \
        "‘Pachito’ Aldana, un guerrero de mil batallas Jose Ricardo transforma a Cartagena desde la comunicación " \
        "Cada idea es un sueño de éxito en medio de la crisis  Vuelo humanitario: las travesías de un repatriado " \
        "Federico García Lorca, secretos guardados Bombones con sabor al sur de Bolívar  Día sin IVA: Gobierno " \
@@ -76,14 +77,22 @@ text = "Gobierno pide suspender venta presencial de electrodomésticos en días 
        "y Periodismo en Valledupar Fiesta y concurso de ‘El más comelón’ en La Paz durante el toque de queda Irán " \
        "emite orden de arresto contra Donald Trump por muerte de Soleimaní Envían a la cárcel a encargados de " \
        "laboratorio de coca en Chimichagua ¡Mea culpa! Mortal champeta en Codazzi “Alea jacta est” Semblanza del " \
-       "Colegio Nacional Loperena Pero no vuelven En la pandemia gratuidad en la educación superior Investigan cerco " \
-       "epidemiológico de primer caso de covid-19 en Manaure Mataron a habitante de calle en medio del toque de queda " \
-       "en Valledupar Familia sacó cadáver de una IPS en Soledad, Atlántico “No es una opción viable encerrarnos hasta " \
-       "que aparezca una vacuna”: Duque Casas de apuestas en Colombia, un negocio en constante auge Joven creó tapabocas " \
-       "transparente para comunidad sorda “Los casos de covid-19 seguirán en aumento”: expertos en salud Buscan disminuir " \
-       "indicadores de pobreza de municipios mineros Uno más, sigue el abandono de adultos mayores Las bodas de plata de " \
-       "LuisEnrique con Rosalbina Festival virtual y serenatas a distancia en La Peña y Guaymaral La perjudicial división " \
-       "del arte en Valledupar: consejeros vs. Oficina de Cultura Murió por coronavirus el cantante barranquillero " \
+       "Colegio Nacional Loperena Pero no vuelven En la pandemia gratuidad en la educación " \
+       "superior Investigan cerco " \
+       "epidemiológico de primer caso de covid-19 en Manaure Mataron a habitante de calle en medio del " \
+       "toque de queda " \
+       "en Valledupar Familia sacó cadáver de una IPS en Soledad, Atlántico “No es una opción viable " \
+       "encerrarnos hasta " \
+       "que aparezca una vacuna”: Duque Casas de apuestas en Colombia, un negocio en constante auge " \
+       "Joven creó tapabocas " \
+       "transparente para comunidad sorda “Los casos de covid-19 seguirán en aumento”: expertos en salud " \
+       "Buscan disminuir " \
+       "indicadores de pobreza de municipios mineros Uno más, sigue el abandono de adultos mayores Las " \
+       "bodas de plata de " \
+       "LuisEnrique con Rosalbina Festival virtual y serenatas a distancia en La Peña y Guaymaral La " \
+       "perjudicial división " \
+       "del arte en Valledupar: consejeros vs. Oficina de Cultura Murió por coronavirus el cantante " \
+       "barranquillero " \
        "‘Joe’ Urquijo Renuncian representantes del Consejo de Cultura de Valledupar Yina Calderón y Manuela " \
        "González volvieron a estallar las redes con un beso “No se logró ni funcionó porque él no quiso”, " \
        "Lina Tejeiro sobre su relación con Andy Rivera Estos son los estrenos que trae Netflix en julio " \
