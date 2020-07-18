@@ -1,7 +1,5 @@
 import string
 import pandas as pd
-import requests
-from bs4 import BeautifulSoup
 from nltk import word_tokenize
 from nltk.corpus import stopwords
 from nltk.probability import FreqDist
@@ -17,17 +15,6 @@ def url_analyse(url):
     newurl = url[url.index('www') + 4::]
     newurl = newurl.split('.')
     return newurl[0]
-
-
-def get_html_site(url):
-    """
-    Receive an url and return a contend parsed according BeautifulSoup
-    :param url: ex: https://www.colombiannews.com.co:
-    :return:        <!DOCTYPE html><body>....
-    """
-    page = requests.get(url)
-    soup = BeautifulSoup(page.content, 'html.parser')
-    return soup
 
 
 def clean_str_new(str):
