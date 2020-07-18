@@ -13,6 +13,7 @@ beautifulsoup4 = "*"
 pandas = "*"
 nltk = "*"
 matplotlib = "*"
+soup = "*"
 
 [requires]
 python_version = "3.6"
