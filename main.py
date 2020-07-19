@@ -3,6 +3,7 @@ import pandas as pd
 from resources import get
 from bs4 import BeautifulSoup
 
+
 DONT_INCLUDE = ['sesión', 'ANUNCIOS', 'registro', 'En video', 'SUSCRÍBETE', '...', '#ENVIDEO',
                 'EN VÍDEO', 'Video:']
 
@@ -12,17 +13,19 @@ NEWSPAPERS = {'https://www.elheraldo.co': ".titulo", 'https://www.zonacero.com':
               'https://www.elpilon.com.co': ".land-see-post-title", 'https://www.eluniversal.com.co': "div.headline",
               'https://www.diariodelcesar.com': "h2.title", 'https://www.hoydiariodelmagdalena.com.co': "h2.title",
               'https://www.diariodelnorte.net': 'h3[itemprop="name"]', 'https://www.laopinion.com.co': "h2.titulo a",
-              'https://www.eltiempo.com': "h3[itemprop='headline'] a", 'https://www.elcolombiano.com': "h3 a .priority-content",
+              'https://www.eltiempo.com': "h3[itemprop='headline'] a",
+              'https://www.elcolombiano.com': "h3 a .priority-content",
               'https://www.elespectador.com': "h3.Card_CustomLabel", 'https://www.lapatria.com': 'span.field-content',
               'https://www.elpais.com.co': 'h2.title a', 'https://www.elmundo.com': 'a div.col-md-12 h2',
-              'http://www.elnuevodia.com.co/nuevodia/': '.field-content', 'https://www.elmanduco.com.co': '.article-title a',
-              'https://www.publimetro.co/co/': '.tit',
+              'http://www.elnuevodia.com.co/nuevodia/': '.field-content',
+              'https://www.elmanduco.com.co': '.article-title a', 'https://www.semana.com': 'h2.article-h a',
+              'https://www.publimetro.co/co/': '.tit', 'https://www.pulzo.com': 'a.event-warmmap',
               'https://www.larepublica.co': '.agriculturaSect, .economiaSect, .globoeconomiaSect, '
                                             '.empresasSect, .ocioSect, .actualidadSect, .consumidorSect, '
                                             '.finanzasSect, .internet-economySect, .ganaderiaSect, .climaSect, '
                                             '.caja-fuerteSect'}
 
-PERIODICOS = {'': ''}
+PERIODICOS = {'https://www.pulzo.com': 'a.event-warmmap'}
 
 
 def touring_newspapers():
@@ -33,30 +36,12 @@ def touring_newspapers():
         for i, new in enumerate(set_of_news, 1):
             if not any((True for x in DONT_INCLUDE if x in new.text)) and (170 > len(new.text) > 30):
                 news.append(get.clean_str_new(new.get_text(strip=True)))
-                # print(i, get.clean_str_new(new.get_text(strip=True)))
-                if new.find_all('a'):
-                    if get.url_analyse(url) in new.a['href']:
-                        links.append(new.a['href'])
-                    else:
-                        links.append(url + new.a['href'])
-                elif new.name == 'a':
-                    if get.url_analyse(url) in new['href']:
-                        links.append(new['href'])
-                    else:
-                        links.append(url + new['href'])
-                elif new.parent == 'a':
-                    if get.url_analyse(url) in new.parent['href']:
-                        links.append(new.parent['href'])
-                    else:
-                        links.append(url + new.parent['href'])
-                elif new.parent.parent.name == 'a':
-                    if get.url_analyse(url) in new.parent.parent['href']:
-                        links.append(new.parent.parent['href'])
-                    else:
-                        links.append(url + new.parent.parent['href'])
-                else:
+                link = get.link_valid(new, url)
+                if not link:
                     del news[-1]
-            print(f'{get.url_analyse(url)} [{len(news)}]')
+                else:
+                    links += link
+        print(f'{get.url_analyse(url)} [{len(news)}]')
         # get.generate_csv(news, links, url)
     df = pd.DataFrame({'Noticias ': news, 'Links': links}, index=range(1, len(news) + 1))
     df.to_csv('all_news.csv', index=range(1, len(news) + 1))

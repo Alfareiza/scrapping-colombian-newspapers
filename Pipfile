@@ -8,12 +8,12 @@ flake8 = "*"
 
 [packages]
 panda = "*"
-request = "*"
 beautifulsoup4 = "*"
 pandas = "*"
 nltk = "*"
 matplotlib = "*"
 soup = "*"
+requests = "*"
 
 [requires]
 python_version = "3.6"

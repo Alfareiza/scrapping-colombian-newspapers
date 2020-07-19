@@ -30,6 +30,33 @@ def clean_str_new(str):
     return str
 
 
+def link_valid(new, url):
+    links = []
+    if new.find_all('a'):
+        if url_analyse(url) in new.a['href']:
+            links.append(new.a['href'])
+        else:
+            links.append(url + new.a['href'])
+    elif new.name == 'a':
+        if url_analyse(url) in new['href']:
+            links.append(new['href'])
+        else:
+            links.append(url + new['href'])
+    elif new.parent == 'a':
+        if url_analyse(url) in new.parent['href']:
+            links.append(new.parent['href'])
+        else:
+            links.append(url + new.parent['href'])
+    elif new.parent.parent.name == 'a':
+        if url_analyse(url) in new.parent.parent['href']:
+            links.append(new.parent.parent['href'])
+        else:
+            links.append(url + new.parent.parent['href'])
+    else:
+        return False
+    return links
+
+
 def generate_csv(news, links, url):
     """
     This program receive two lists: news and links, also a str with url and then generate a csv
