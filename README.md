@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/Alfareiza/ScrappingColombianNewspapers.svg?branch=master)](https://travis-ci.org/Alfareiza/ScrappingColombianNewspapers)
+
 # Scrapping Colombian Newspapers 
 
 :shipit: Scrapping information of Colombian newspapers.
@@ -25,10 +27,10 @@ pipenv install -d
 And then
 
 ```
-until finished
+python main.py
 ```
 
-End with an example of getting some data out of the system or using it for a little demo
+Will be generated a csv (all_news.csv) with all the information captured at the moment of the execution of the line above.
 
 ## Running the tests
 
