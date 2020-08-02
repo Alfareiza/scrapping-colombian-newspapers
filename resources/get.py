@@ -17,17 +17,16 @@ def url_analyse(url):
     return newurl[0]
 
 
-def clean_str_new(str):
+def clean_text(text):
     """
     Make some treatments on every string news
     :param str:
     :return:
     """
-    str = str.lstrip(' ')
-    str = str.replace('  ', '')
-    str = str.replace('\n', '')
-    str = str.replace('\t', '')
-    return str
+    removewords = ['[Video]', '  ', '\n', '\t', '(VIDEO)', 'En Vivo |']
+    text = text.lstrip(' ')
+    text = [text.replace(i, "") for i in removewords]
+    return text[0]
 
 
 def link_valid(new, url):

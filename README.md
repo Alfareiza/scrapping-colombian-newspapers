@@ -10,7 +10,7 @@ Repository that captures information from Colombian newspapers (list of newspape
 
 ### Prerequisites
 
-Pip and Python installed and configured as environment variables. Then, install pipenv, run.
+Pip and Python installed and configured as environment variables. Then, install pipenv.
 
 ```
 pip install pipenv

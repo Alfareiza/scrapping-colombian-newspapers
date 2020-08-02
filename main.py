@@ -31,18 +31,27 @@ PERIODICOS = {'https://www.pulzo.com': 'a.event-warmmap'}
 def touring_newspapers():
     news, links = [], []
     for url, css_selector in NEWSPAPERS.items():
-        soup = BeautifulSoup(requests.get(url).content, 'html.parser')
-        set_of_news = soup.select(css_selector)
-        for i, new in enumerate(set_of_news, 1):
-            if not any((True for x in DONT_INCLUDE if x in new.text)) and (170 > len(new.text) > 30):
-                news.append(get.clean_str_new(new.get_text(strip=True)))
-                link = get.link_valid(new, url)
-                if not link:
-                    del news[-1]
-                else:
-                    links += link
-        print(f'{get.url_analyse(url)} [{len(news)}]')
-        # get.generate_csv(news, links, url)
+        anyException = False
+        try:
+            response = requests.get(url, timeout=60)
+        except requests.RequestException:
+            print(f'No fue posible capturar info de {url}')
+            anyException = True
+        # diffSeconds = response.elapsed.total_seconds()
+        if not anyException:
+            soup = BeautifulSoup(response.content, 'html.parser')
+            set_of_news = soup.select(css_selector)
+            for i, new in enumerate(set_of_news, 1):
+                txt = get.clean_text(new.get_text(strip=True))
+                if not any((True for x in DONT_INCLUDE if x in txt)) and (170 > len(txt) > 30):
+                    news.append(txt)
+                    link = get.link_valid(new, url)
+                    if not link:
+                        del news[-1]
+                    else:
+                        links += link
+            # print(f'{get.url_analyse(url)} [{len(news)}]')
+            # get.generate_csv(news, links, url)
     df = pd.DataFrame({'Noticias ': news, 'Links': links}, index=range(1, len(news) + 1))
     df.to_csv('all_news.csv', index=range(1, len(news) + 1))
     print(df)
