@@ -1,6 +1,6 @@
 import requests
 import pandas as pd
-from resources import get
+from scrapproject.resources import get
 from bs4 import BeautifulSoup
 
 
