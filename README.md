@@ -27,10 +27,32 @@ pipenv install -d
 And then
 
 ```
-python main.py
+python scrapproject/main.py
 ```
 
 Will be generated a csv (all_news.csv) with all the information captured at the moment of the execution of the line above.
+
+At the moment, the list of scrapped sites is [20]:
+- elheraldo
+- zonacero
+- elpilon
+- eluniversal
+- diariodelcesar
+- hoydiariodelmagdalena
+- diariodelnorte
+- laopinion
+- eltiempo
+- elcolombiano
+- elespectador
+- lapatria
+- elpais
+- elmundo
+- elnuevodia
+- elmanduco
+- semana
+- publimetro
+- pulzo
+- larepublica
 
 ## Running the tests
 
