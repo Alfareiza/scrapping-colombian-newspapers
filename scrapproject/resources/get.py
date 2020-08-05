@@ -19,41 +19,42 @@ def url_analyse(url):
 
 def clean_text(text):
     """
-    Make some treatments on every string news
-    :param str:
-    :return:
+    Exclude some words of the text in every new
+    :param text:
+    :return: text
     """
-    removewords = ['[Video]', '  ', '\n', '\t', '(VIDEO)', 'En Vivo |']
+    removewords = ['[Video]', '  ', '\n', '\t', '(VIDEO)', 'En Vivo |', 'Video |', '[Videos]']
     text = text.lstrip(' ')
-    text = [text.replace(i, "") for i in removewords]
-    return text[0]
+    for i in removewords:
+        text = text.replace(i, "")
+    return text
 
 
 def link_valid(new, url):
-    links = []
+    linkTemp = []
     if new.find_all('a'):
         if url_analyse(url) in new.a['href']:
-            links.append(new.a['href'])
+            linkTemp.append(new.a['href'])
         else:
-            links.append(url + new.a['href'])
+            linkTemp.append(url + new.a['href'])
     elif new.name == 'a':
         if url_analyse(url) in new['href']:
-            links.append(new['href'])
+            linkTemp.append(new['href'])
         else:
-            links.append(url + new['href'])
+            linkTemp.append(url + new['href'])
     elif new.parent == 'a':
         if url_analyse(url) in new.parent['href']:
-            links.append(new.parent['href'])
+            linkTemp.append(new.parent['href'])
         else:
-            links.append(url + new.parent['href'])
+            linkTemp.append(url + new.parent['href'])
     elif new.parent.parent.name == 'a':
         if url_analyse(url) in new.parent.parent['href']:
-            links.append(new.parent.parent['href'])
+            linkTemp.append(new.parent.parent['href'])
         else:
-            links.append(url + new.parent.parent['href'])
+            linkTemp.append(url + new.parent.parent['href'])
     else:
         return False
-    return links
+    return linkTemp
 
 
 def generate_csv(news, links, url):

@@ -2,7 +2,7 @@ import requests
 import pandas as pd
 from scrapproject.resources import get
 from bs4 import BeautifulSoup
-
+import logging
 
 DONT_INCLUDE = ['sesión', 'ANUNCIOS', 'registro', 'En video', 'SUSCRÍBETE', '...', '#ENVIDEO',
                 'EN VÍDEO', 'Video:']
@@ -25,53 +25,35 @@ NEWSPAPERS = {'https://www.elheraldo.co': ".titulo", 'https://www.zonacero.com':
                                             '.finanzasSect, .internet-economySect, .ganaderiaSect, .climaSect, '
                                             '.caja-fuerteSect'}
 
-PERIODICOS = {'https://www.pulzo.com': 'a.event-warmmap'}
+PERIODICOS = {'https://www.diariodelnorte.net': 'h3[itemprop="name"]'}
+
+PERIODICOS2 = {'https://www.publimetro.co/co/': '.tit'}
 
 
 def touring_newspapers():
     news, links = [], []
     for url, css_selector in NEWSPAPERS.items():
-        anyException = False
         try:
-            response = requests.get(url, timeout=60)
-        except requests.RequestException:
-            print(f'No fue posible capturar info de {url}')
-            anyException = True
-        # diffSeconds = response.elapsed.total_seconds()
-        if not anyException:
+            response = requests.get(url, timeout=10)
             soup = BeautifulSoup(response.content, 'html.parser')
             set_of_news = soup.select(css_selector)
             for i, new in enumerate(set_of_news, 1):
                 txt = get.clean_text(new.get_text(strip=True))
-                if not any((True for x in DONT_INCLUDE if x in txt)) and (170 > len(txt) > 30):
+                link = get.link_valid(new, url)
+                if not any((True for x in DONT_INCLUDE if x in txt)) and (170 > len(txt) > 30) and link:
                     news.append(txt)
-                    link = get.link_valid(new, url)
-                    if not link:
-                        del news[-1]
-                    else:
-                        links += link
+                    links.append(link[0])
             # print(f'{get.url_analyse(url)} [{len(news)}]')
             # get.generate_csv(news, links, url)
-    df = pd.DataFrame({'Noticias ': news, 'Links': links}, index=range(1, len(news) + 1))
-    df.to_csv('all_news.csv', index=range(1, len(news) + 1))
-    print(df)
-    pass
+            # deltaResponse = response.elapsed.total_seconds()
+        except requests.RequestException as e:
+            print(f'No fue posible capturar info de {url} : ERROR > {e}')
+    if not len(news) == 0:
+        df = pd.DataFrame({'Noticias ': news, 'Links': links}, index=range(1, len(news) + 1))
+        df.to_csv('all_news.csv', index=range(1, len(news) + 1))
+        return df
+    else:
+        return f'No Information'
 
 
-touring_newspapers()
-# get_new = int(input('=== Este programa retorna las noticias de los siguientes Portales === \n'
-#                     '1 - El Heraldo - Barranquilla\n'
-#                     '2 - El Pilon - Santa Marta\n'
-#                     '3 - El Universal - Cartagena\n'
-#                     '4 - Diario Del Cesar - Cesar\n'
-#                     'Digite el número del periódico deseado: '))
-# if get_new is 1:
-#     get_elheraldo_news()
-# elif get_new is 2:
-#     get_elpilon_news()
-# elif get_new is 3:
-#     get_eluniversal_news()
-# elif get_new is 4:
-#     get_diariodelcesar_news()
-# else:
-#     'Perdiste'
+print(touring_newspapers())
