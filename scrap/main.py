@@ -71,7 +71,7 @@ def touring_newspapers():
         pass
 
 
-# touring_newspapers()
+touring_newspapers()
 
 if __name__ == '__main__':
     print('olá')
