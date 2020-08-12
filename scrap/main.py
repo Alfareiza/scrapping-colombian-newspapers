@@ -1,6 +1,8 @@
 import logging.config
 import requests
 import pandas as pd
+
+from scrap import log_file_path
 from scrap.resources import get
 
 TIMEOUT = 20
@@ -26,7 +28,9 @@ NEWSPAPERS = {'https://www.elheraldo.co': ".titulo", 'https://www.zonacero.com':
                                             '.finanzasSect, .internet-economySect, .ganaderiaSect, .climaSect, '
                                             '.caja-fuerteSect'}
 
-logging.config.fileConfig(fname='logs/setup_log.ini')
+logging.config.fileConfig(log_file_path)
+
+# logging.config.fileConfig('setup_log.conf')
 logger = logging.getLogger('root')
 
 
@@ -70,4 +74,8 @@ def touring_newspapers():
     else:
         pass
 
-touring_newspapers()
+
+# touring_newspapers()
+
+if __name__ == '__main__':
+    print(NEWSPAPERS)
