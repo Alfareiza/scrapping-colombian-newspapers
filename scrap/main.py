@@ -75,7 +75,4 @@ def touring_newspapers():
         pass
 
 
-# touring_newspapers()
-
-if __name__ == '__main__':
-    print(NEWSPAPERS)
+touring_newspapers()
