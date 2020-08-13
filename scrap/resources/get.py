@@ -8,6 +8,11 @@ import matplotlib.pyplot as plt
 
 
 def gettin_news(css_selector, response):
+    """
+    This function make a analyse of response from a css selector
+    :param css_selector(str): .title, response(response): content of requests.get(url)
+    :return: dict of news with all the html tags that it has
+    """
     soup = BeautifulSoup(response.content, 'html.parser')
     dict_of_news = soup.select(css_selector)
     return dict_of_news
