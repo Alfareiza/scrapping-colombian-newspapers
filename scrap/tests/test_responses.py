@@ -1,4 +1,4 @@
-import pytest
+# import pytest
 import requests
 # from scrap.resources import get
 from vcr import VCR
@@ -29,7 +29,9 @@ URLS_AND_SELECTORS = [i for i in NEWSPAPERS.items()]
 
 url = 'http://www.elheraldo.co'
 
-@pytest.mark.parametrize
+
+# @pytest.mark.parametrize
+
 
 @vcr.use_cassette
 def mocked_site(url):
