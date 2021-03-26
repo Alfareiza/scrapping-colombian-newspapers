@@ -12,4 +12,4 @@ install:
 
 script:
   - pipenv run flake8 .
-  - pytest scrapproject
+  - pytest scrap
