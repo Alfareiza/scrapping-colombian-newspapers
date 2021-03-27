@@ -1,4 +1,4 @@
-![Build Status](https://github.com/Alfareiza/ScrappingColombianNewspapers/actions/workflows/main/badge.svg)
+![](https://github.com/Alfareiza/ScrappingColombianNewspapers/actions/workflows/main.yml/badge.svg)
 
 # Scrapping Colombian Newspapers 
 
