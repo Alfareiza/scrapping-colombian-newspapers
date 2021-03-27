@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/Alfareiza/ScrappingColombianNewspapers.svg?branch=master)](https://travis-ci.org/Alfareiza/ScrappingColombianNewspapers)
+[![Build Status](https://github.com/Alfareiza/ScrappingColombianNewspapers/actions/workflows/main/badge.svg)]
 
 # Scrapping Colombian Newspapers 
 
