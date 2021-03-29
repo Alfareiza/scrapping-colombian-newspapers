@@ -23,6 +23,10 @@ def url_analyse(url):
     Receive a url and return only the domain
     :param url: ex: www.bbc.uk
     :return:    bbc
+    >>> url_analyse('http://www.elheraldo.co')
+    'elheraldo'
+    >>> url_analyse('http://www.otrosite.com.co')
+    'otrosite'
     """
     newurl = url[url.index('www') + 4::]
     newurl = newurl.split('.')
@@ -34,8 +38,12 @@ def clean_text(text):
     Exclude some words of the text in every new
     :param text:
     :return: text
+    >>> clean_text('Video En Vivo')
+    ''
+    >>> clean_text('Video | Video')
+    ''
     """
-    removewords = ['[Video]', '  ', '\n', '\t', '(VIDEO)', 'En Vivo |', 'Video |', '[Videos]']
+    removewords = ['[Video]', '  ', '\n', '\t', '(VIDEO)', 'En Vivo |', 'Video |', '[Videos]', 'Video', 'En Vivo']
     for i in removewords:
         text = text.replace(i, "")
     text = text.lstrip(' ').rstrip(' ')
