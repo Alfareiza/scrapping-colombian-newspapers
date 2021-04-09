@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "periodicos-colombia"
+version = "0.1.0"
+description = ""
+authors = ["alfonso <@lfareiza1989>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+requests = "^2.25.1"
+pandas = "^1.2.3"
+beautifulsoup4 = "^4.9.3"
+nltk = "^3.5"
+matplotlib = "^3.4.0"
+
+[tool.poetry.dev-dependencies]
+flake8 = "^3.9.0"
+pytest = "^6.2.2"
+vcrpy = "^4.1.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
