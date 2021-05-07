@@ -1,3 +1,6 @@
+import json
+import os
+import re
 import string
 import pandas as pd
 from bs4 import BeautifulSoup
@@ -7,18 +10,38 @@ from nltk.probability import FreqDist
 import matplotlib.pyplot as plt
 
 
-def gettin_news(css_selector, response):
+def gettin_news_by_selector(css_selector, response):
     """
-    This function make a analyse of response from a css selector
-    :param css_selector(str): .title, response(response): content of requests.get(url)
-    :return: dict of news with all the html tags that it has
+    Esta función analiza la respuesta del request (response) a partir de un css selector.
+    :param css_selector(str): response(object): content of requests.get(url)
+    :return: dict of news with all the html tags that it has.
     """
     soup = BeautifulSoup(response.content, 'html.parser')
     dict_of_news = soup.select(css_selector)
     return dict_of_news
 
 
-def url_analyse(url):
+def gettin_news_by_findall(response):
+    """
+    Esta función busca en el último <script type=application/javascript> y convierte a json la información capturada
+    :param response:
+    :return: news: list de tuplas: [('noticia1', 'link-de-noticia1'), ('noticia2', 'link-de-noticia2'), ('noticia2', 'link-de-noticia2')]
+    """
+    soup = BeautifulSoup(response, 'html.parser')
+    script = soup.find_all('script', attrs={'type': 'application/javascript'})[-1].string.strip()[133:]
+    starts_from, until_to = script.index("{\"type\""), script.index(";Fusion.globalContentConfig=")
+    script = json.loads(script[starts_from:until_to])
+    news = list()
+    for x in script['content_elements']:
+        new = (x['headlines']['basic'], x['canonical_url'])
+        news.append(new)
+    if news:
+        return news
+    else:
+        return False
+
+
+def url_analyse(url: str):
     """
     Receive a url and return only the domain
     :param url: ex: www.bbc.uk
@@ -27,73 +50,112 @@ def url_analyse(url):
     'elheraldo'
     >>> url_analyse('http://www.otrosite.com.co')
     'otrosite'
+    >>> url_analyse('www.site.com.co')
+    'site'
     """
     newurl = url[url.index('www') + 4::]
     newurl = newurl.split('.')
     return newurl[0]
 
 
-def clean_text(text):
+def clean_text(text: str):
     """
-    Exclude some words of the text in every new
-    :param text:
-    :return: text
+    Elimina algunas palabras de el texto en cada notícia.
+    :param text: str:
+    :return: text: str
     >>> clean_text('Video En Vivo')
     ''
     >>> clean_text('Video | Video')
     ''
+    >>> clean_text('EN VIVO Paro Nacional: siga las marchas')
+    'Paro Nacional: siga las marchas'
     """
-    removewords = ['[Video]', '  ', '\n', '\t', '(VIDEO)', 'En Vivo |', 'Video |', '[Videos]', 'Video', 'En Vivo']
+    removewords = ['[Video]', '  ', '\n', '\t', '(VIDEO)', '(Video)', 'En Vivo |', 'Video |', 'VIDEO |', '[Videos]',
+                   'Videos', 'Video', 'Video:', 'En Vivo', 'EN VIVO', '[Fotos]']
     for i in removewords:
         text = text.replace(i, "")
     text = text.lstrip(' ').rstrip(' ')
     return text
 
 
-def link_valid(new, url):
-    linkTemp = []
+def absolute_link(link: str, url: str):
+    """
+    Recibe el link capturado y si no posee el dominio lo agrega
+    :param link: str: '\texto-de-la-noticia\
+    :param url: str: 'https://www.site.com.co
+    :return: new link :str
+    >>> absolute_link('/salud/la-importancia-de-beber-agua', 'https://www.paginaweb.com')
+    'https://www.paginaweb.com/salud/la-importancia-de-beber-agua'
+    """
+    if url_analyse(url) not in link:
+        return url + link
+
+
+def enlace(new, url: str):
+    """
+    Navega por la noticia hasta encontrar un link
+    :param new: (object) con la información de la noticia.
+    :param url: (str) con la url del periódico. Ej.: 'https://www.elheraldo.co'
+    :return: (str) Link de la noticia, o (False) si no lo encuentra.
+    """
+    linkTemp = ''
     if new.find_all('a'):
         if url_analyse(url) in new.a['href']:
-            linkTemp.append(new.a['href'])
-        else:
-            linkTemp.append(url + new.a['href'])
+            linkTemp = new.a['href']
+        elif not re.match('^(http|www)', new.a['href']):
+            linkTemp = url + new.a['href']
     elif new.name == 'a':
         if url_analyse(url) in new['href']:
-            linkTemp.append(new['href'])
-        else:
-            linkTemp.append(url + new['href'])
+            linkTemp = new['href']
+        elif not re.match('^(http|www)', new['href']):
+            linkTemp = url + new['href']
     elif new.parent.name == 'a':
-        if url_analyse(url) in new.parent['href']:
-            linkTemp.append(new.parent['href'])
-        else:
-            linkTemp.append(url + new.parent['href'])
+        if url_analyse(url) in new.parent['href'][:new.parent['href'].index('/', 2)]:
+            linkTemp = new.parent['href']
+        elif not re.match('^(http|www)', new.parent['href']):
+            linkTemp = url + new.parent['href']
     elif new.parent.parent.name == 'a':
         if url_analyse(url) in new.parent.parent['href']:
-            linkTemp.append(new.parent.parent['href'])
-        else:
-            linkTemp.append(url + new.parent.parent['href'])
+            linkTemp = new.parent.parent['href']
+        elif not re.match('^(http|www)', new.parent.parent['href']):
+            linkTemp = url + new.parent.parent['href']
     else:
         return False
     return linkTemp
 
 
-def generate_csv(news, links, url):
+def create_file(filename, content):
     """
-    This program receive two lists: news and links, also a str with url and then generate a csv
-    :param  news:['text of first new', 'text of second new', 'text of third new']
-            links: ['http://wwww.colombiannew.com/text-of-first-new','http://wwww.colombiannew.com/text-of-second-new,
-                    'http://wwww.colombiannew.com/text-of-third-new']
-            url: 'http://wwww.colombiannew.com'
-    :return: csv organized into dataframe with two columns (1-text of new, 2-link of new)
+    Crear archivo a partir de un nombre y su contenido
+    :param filename: str
+    :param content: str
+    :return:
     """
-    df = pd.DataFrame({'Noticias ': news, 'Links': links}, index=range(1, len(news) + 1))
-    df.to_csv(f'{url_analyse(url)}.csv', index=range(1, len(news) + 1))
-    print(df)
+    path = os.getcwd()
+    with open(f'{path}\\\\{filename}', 'w', encoding="utf-8") as fp:
+        fp.write(content.strip())
+
+
+def to_xml(df):
+    """
+    Crea xml desde un dataframe
+    :param df: dataframe
+    :return: str: contenido del xml
+    """
+    def row_xml(row):
+        xml = ['<item>']
+        for i, col_name in enumerate(row.index):
+            xml.append('  <{0}>{1}</{0}>'.format(col_name, row.iloc[i]))
+        xml.append('</item>')
+        return '\n'.join(xml)
+
+    res = '\n'.join(df.apply(row_xml, axis=1))
+    return (res)
 
 
 def unifyresults(*tuplas):
     """
-    Receive info from newsletter and unify them
+    Recibe información del periódico y la unifica.
     :param tuplas:
     :return: Nothing, only generate a dataframe with two columns, column[0]->News and column[1]->Links
     """
