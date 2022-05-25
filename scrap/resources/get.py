@@ -17,8 +17,7 @@ def gettin_news_by_selector(css_selector, response):
     :return: dict of news with all the html tags that it has.
     """
     soup = BeautifulSoup(response.content, 'html.parser')
-    dict_of_news = soup.select(css_selector)
-    return dict_of_news
+    return soup.select(css_selector)
 
 
 def gettin_news_by_findall(response):
@@ -31,7 +30,7 @@ def gettin_news_by_findall(response):
     script = soup.find_all('script', attrs={'type': 'application/javascript'})[-1].string.strip()[133:]
     starts_from, until_to = script.index("{\"type\""), script.index(";Fusion.globalContentConfig=")
     script = json.loads(script[starts_from:until_to])
-    news = list()
+    news = []
     for x in script['content_elements']:
         new = (x['headlines']['basic'], x['canonical_url'])
         news.append(new)
@@ -53,10 +52,10 @@ def url_analyse(url: str):
     >>> url_analyse('www.site.com.co')
     'site'
     """
-    newurl = url[url.index('www') + 4::]
-    newurl = newurl.split('.')
-    return newurl[0]
-
+    # newurl = url[url.index('www') + 4::]
+    # newurl = newurl.split('.')
+    # return newurl[0]
+    return re.findall('[https?:\/\/]?(www\.)?([a-zA-Z0-9]+)+\.[\w+.]+', url)[0][-1]
 
 def clean_text(text: str):
     """
