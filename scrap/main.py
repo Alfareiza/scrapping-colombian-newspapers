@@ -2,18 +2,19 @@ import logging.config
 import os
 from os import listdir
 from os.path import isfile, join
+from pathlib import Path
+from typing import List
 
 import pandas as pd
-
-from scrap import log_file_path
-from scrap.resources import get
+from resources import get
 import requests
 
 TIMEOUT = 20
 DONT_INCLUDE = ['sesión', 'ANUNCIOS', 'registro', 'En video', 'SUSCRÍBETE', '...', '#ENVIDEO',
                 'EN VÍDEO', 'Video:', 'Agenda tu cita', 'Buscas casa']
 
-logging.config.fileConfig(log_file_path)
+
+logging.config.fileConfig(Path(__file__).parent / 'setup_log.conf')
 
 # logging.config.fileConfig('setup_log.conf')
 # logger = logging.getLogger('root')
@@ -41,14 +42,14 @@ class Newspaper:
         :return: lista of tuplas
         """
         response = self.request_to_newspaper_site()
-        self.update_deltaresponse(response.elapsed.total_seconds())
         if response:
+            self.update_deltaresponse(response.elapsed.total_seconds())
             if self.method == 'css_selector':
                 news_captured = get.gettin_news_by_selector(self.css_selector, response)
                 if news_captured:
                     for i, new_captured in enumerate(news_captured, 1):
                         new = (
-                            get.clean_text(new_captured.get_text(strip=True)), get.link(new_captured, self.url))
+                            get.clean_text(new_captured.get_text(strip=True)), get.enlace(new_captured, self.url))
                         if self.validate_new(new):
                             self.news.append(new)
                     logger.info(
@@ -92,11 +93,12 @@ class Newspaper:
         :return: response
         """
         try:
-            response = requests.get(self.url, timeout=TIMEOUT)
-            return response
-        except requests.RequestException as e:
-            # logger.warning(f'Unreacheable info from {self.url} > {e}')
-            print(self.url, e)
+            return requests.get(self.url, timeout=TIMEOUT)
+        except requests.exceptions.ConnectionError as e:
+            logger.warning(f'Unreacheable info from {self.url} > {e}')
+            return False
+        except requests.exceptions.ReadTimeout as e:
+            logger.warning(f'Unreacheable info from {self.url} (Read timed out)')
             return False
 
     def get_qty_news(self):
@@ -136,17 +138,17 @@ class Scrapping_newspapers():
         self.total_news = total_news
         self.tiempo_total = tiempo_total
 
-    def get_all_news(self, newspapers_list: list, export='csv'):
+    def get_all_news(self, newspapers_list: List[Newspaper], export='csv'):
         """
         Recibe lista de objetos de periodicos.
         todas_noticias es UNA lista de tuplas con todas las
         noticias de los objetos de la lista newspapers_list.
         """
-        todas_noticias = list()
+        todas_noticias = []
         self.update_cant_periodicos(len(newspapers_list))
         for newspaper in newspapers_list:
             newspaper.get_news()
-            todas_noticias = todas_noticias + newspaper.news
+            todas_noticias += newspaper.news
             newspaper.limpiar_noticias()
             self.tiempo_total += newspaper.delta_response
         self.update_total_news(len(todas_noticias))
@@ -156,8 +158,6 @@ class Scrapping_newspapers():
             self.generate_xml(todas_noticias)
         elif export == 'json':
             self.generate_json(todas_noticias)
-        else:
-            pass
 
     def create_dataframe(self, data):
         """
@@ -265,7 +265,7 @@ if __name__ == '__main__':
     zonacero = Newspaper(nombre='Zonacero', ciudad='Barranquilla', url='https://www.zonacero.com',
                          css_selector='div.title',
                          method='css_selector')
-    elpilon = Newspaper(nombre='El Pilon', ciudad='', url='https://www.elpilon.com.co',
+    elpilon = Newspaper(nombre='El Pilon', ciudad='', url='https://elpilon.com.co',
                         css_selector='.land-see-post-title', method='css_selector')
     eluniversal = Newspaper(nombre='El Universal', ciudad='', url='https://www.eluniversal.com.co',
                             css_selector='div.headline', method='css_selector')
@@ -312,6 +312,6 @@ if __name__ == '__main__':
     # publimetro.get_news()
     # publimetro.print_news()
     scrap = Scrapping_newspapers()
-    scrap.get_all_news(newspapers_list, export='xml')
+    scrap.get_all_news([hoydiariodelmagdalena], export='csv')
     # analisis = Explore()
     # analisis.tk()
