@@ -312,6 +312,6 @@ if __name__ == '__main__':
     # publimetro.get_news()
     # publimetro.print_news()
     scrap = Scrapping_newspapers()
-    scrap.get_all_news([hoydiariodelmagdalena], export='csv')
+    scrap.get_all_news(newspapers_list, export='csv')
     # analisis = Explore()
     # analisis.tk()
