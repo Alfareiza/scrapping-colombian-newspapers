@@ -3,18 +3,25 @@ import os
 import re
 import string
 import pandas as pd
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, ResultSet
 from nltk import word_tokenize
 from nltk.corpus import stopwords
 from nltk.probability import FreqDist
 import matplotlib.pyplot as plt
 
 
-def gettin_news_by_selector(css_selector, response):
+def gettin_news_by_selector(css_selector, response) -> ResultSet:
     """
-    Esta función analiza la respuesta del request (response) a partir de un css selector.
-    :param css_selector(str): response(object): content of requests.get(url)
-    :return: dict of news with all the html tags that it has.
+    Esta función analiza la respuesta del request (response)
+    a partir de un css selector y retorna los matchs de la página
+    web en relación al css selector.
+        :param css_selector: Css Selector para las noticias.
+                            Ej.: 'h1 a' o 'h3[itemprop='headline'] a'
+        :type css_selector: string
+        :param response: Contenido del llamado previo a la url.
+        :type response: bytes
+        :return: Objeto iterable
+        :rtype: <class 'bs4.element.ResultSet'>
     """
     soup = BeautifulSoup(response.content, 'html.parser')
     return soup.select(css_selector)
