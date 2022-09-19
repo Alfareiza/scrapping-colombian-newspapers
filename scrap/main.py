@@ -9,10 +9,8 @@ import pandas as pd
 from resources import get
 import requests
 
-TIMEOUT = 20
 DONT_INCLUDE = ['sesión', 'ANUNCIOS', 'registro', 'En video', 'SUSCRÍBETE', '...', '#ENVIDEO',
                 'EN VÍDEO', 'Video:', 'Agenda tu cita', 'Buscas casa']
-
 
 logging.config.fileConfig(Path(__file__).parent / 'setup_log.conf')
 
@@ -23,7 +21,8 @@ logger.setLevel(logging.INFO)
 
 
 class Newspaper:
-    def __init__(self, nombre, ciudad, url, css_selector, method, ref='', news=[], delta_response=0):
+    def __init__(self, nombre, ciudad, url, css_selector='',
+                 method='css_selector', ref='', news=[], delta_response=0):
         self.nombre = nombre
         self.ciudad = ciudad
         self.url = url
@@ -43,7 +42,6 @@ class Newspaper:
         :return: lista de tuplas
         """
         if not (response := self.request_to_newspaper_site()):
-            logger.warning(f"Error {response.status_code} en {self.url}")
             return
         self.update_deltaresponse(response.elapsed.total_seconds())
         if self.method == 'css_selector':
@@ -52,8 +50,8 @@ class Newspaper:
                     new = get.clean_text(new_captured.get_text(strip=True)), \
                           get.enlace(new_captured, self.url)
 
-                    if self.validate_new(new):
-                        self.news.append(new)
+                    if self.validate_new(new): self.news.append(new)
+
                 logger.info("{} - {:.1f}s, {} noticias.".
                             format(self.nombre,
                                    self.delta_response,
@@ -61,12 +59,13 @@ class Newspaper:
 
                 return self.news
         elif self.method == 'own_method':
-            if news_captured := eval(f"self.{self.ref}_get_news({response.content})"):
+            if news_captured := eval(f"self.get_news_{self.ref}({response.content})"):
                 for new_captured in news_captured:
                     txt, link = new_captured
                     new = get.clean_text(txt), get.absolute_link(link, self.url)
-                    if self.validate_new(new):
-                        self.news.append(new)
+
+                    if self.validate_new(new): self.news.append(new)
+
                 logger.info("{0} - {1}s, {2} noticias.".
                             format(self.nombre,
                                    self.delta_response,
@@ -81,7 +80,6 @@ class Newspaper:
                                   'sin'))
             return
 
-
     def validate_new(self, new) -> bool:
         """
         Valida que cada noticia cumpla con ciertos criterios para poder ser
@@ -94,19 +92,29 @@ class Newspaper:
         return bool(not any(True for x in DONT_INCLUDE if x in txt) and
                     170 > len(txt) > 30 and link and txt not in ultima_noticia)
 
-    def request_to_newspaper_site(self):
+    def request_to_newspaper_site(self, attempts=2, timeout=20, error=None):
         """
         Principal request para el site del periodico.
         :return: response
         """
         try:
-            return requests.get(self.url, timeout=TIMEOUT)
-        except requests.exceptions.ConnectionError as e:
-            logger.warning(f'Unreacheable info from {self.url} > {e}')
-            return False
-        except requests.exceptions.ReadTimeout as e:
+            if not attempts:
+                return
+            attempts -= 1
+            return requests.get(self.url,
+                                headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; '
+                                                       'Win64; x64) AppleWebKit/537.36 '
+                                                       '(KHTML, like Gecko) Chrome/102.0.0.0'
+                                                       ' Safari/537.36'},
+                                verify=False, timeout=timeout)
+
+        except requests.exceptions.ConnectionError as error:
+            logger.warning(f'Unreacheable info from {self.url} > {error}')
+            return
+        except requests.exceptions.ReadTimeout as error:
             logger.warning(f'Unreacheable info from {self.url} (Read timed out)')
-            return False
+            timeout += 20
+            return self.request_to_newspaper_site(timeout=timeout, attempts=attempts)
 
     def get_qty_news(self):
         """
@@ -115,7 +123,7 @@ class Newspaper:
         """
         return len(self.news)
 
-    def elespectador_get_news(self, response):
+    def get_news_elespectador(self, response):
         """
         Método único de "elespectador" para buscar sus noticias en el
         json que el html posee.
@@ -170,7 +178,6 @@ class Scrapping_newspapers():
                 self.generate_json(todas_noticias)
         else:
             print("No hay noticias.")
-
 
     def create_dataframe(self, data):
         """
@@ -265,89 +272,72 @@ class Explore():
 if __name__ == '__main__':
     elheraldo = Newspaper(nombre='El Heraldo', ciudad='Barranquilla',
                           url='https://www.elheraldo.co',
-                          css_selector='h1 a',
-                          method='css_selector')
+                          css_selector='h1 a')
     zonacero = Newspaper(nombre='Zonacero', ciudad='Barranquilla',
                          url='https://www.zonacero.com',
-                         css_selector='div.title',
-                         method='css_selector')
+                         css_selector='div.title')
     elpilon = Newspaper(nombre='El Pilon', ciudad='',
                         url='https://elpilon.com.co',
-                        css_selector='.title_note',
-                        method='css_selector')
+                        css_selector='.title_note')
     eluniversal = Newspaper(nombre='El Universal', ciudad='',
                             url='https://www.eluniversal.com.co',
-                            css_selector='div.headline',
-                            method='css_selector')
+                            css_selector='div.headline')
     diariodelcesar = Newspaper(nombre='Diario Del Cesar', ciudad='',
                                url='https://www.diariodelcesar.com',
-                               css_selector='h2.title',
-                               method='css_selector')
+                               css_selector='h2.title')
     diariodelmag = Newspaper(nombre='Hoy Diario Del Magdalena', ciudad='',
                              url='https://www.hoydiariodelmagdalena.com.co',
-                             css_selector='h2.title',
-                             method='css_selector')
+                             css_selector='h2.title')
+    elinformador = Newspaper(nombre='El Informador', ciudad='Santa Marta',
+                             url='https://www.elinformador.com.co',
+                             css_selector="h3[itemprop='name'] a")
     diariodelnorte = Newspaper(nombre='Diario Del Norte', ciudad='',
                                url='https://www.diariodelnorte.net',
-                               css_selector='.entry-title',
-                               method='css_selector')
+                               css_selector='.entry-title')
     laopinion = Newspaper(nombre='La Opinión', ciudad='',
                           url='https://www.laopinion.com.co',
-                          css_selector='h2 a',
-                          method='css_selector')
+                          css_selector='h2 a')
     eltiempo = Newspaper(nombre='El Tiempo', ciudad='',
                          url='https://www.eltiempo.com',
-                         css_selector="h2[itemprop='headline'] a",
-                         method='css_selector')
+                         css_selector="h2[itemprop='headline'] a")
     elcolombiano = Newspaper(nombre='El Colombiano', ciudad='',
                              url='https://www.elcolombiano.com',
-                             css_selector='h3 a .priority-content',
-                             method='css_selector')
+                             css_selector='h3 a .priority-content')
     elespectador = Newspaper(nombre='El Espectador', ciudad='',
                              url='https://www.elespectador.com',
-                             css_selector='',
                              method='own_method')
     lapatria = Newspaper(nombre='La Patria', ciudad='',
                          url='https://www.lapatria.com',
-                         css_selector='span.field-content',
-                         method='css_selector')
+                         css_selector='span.field-content')
     elpais = Newspaper(nombre='El Pais', ciudad='',
                        url='https://www.elpais.com.co',
-                       css_selector='h2.title a',
-                       method='css_selector')
+                       css_selector='h2.title a')
     elmundo = Newspaper(nombre='El Mundo', ciudad='',
                         url='https://www.elmundo.com',
-                        css_selector='a div.col-md-12 h2',
-                        method='css_selector')
+                        css_selector='a div.col-md-12 h2')
     elnuevodia = Newspaper(nombre='El Nuevo Dia', ciudad='',
-                           url='http://www.elnuevodia.com.co/nuevodia/',
-                           css_selector='.field-content',
-                           method='css_selector')
+                           url='http://www.elnuevodia.com.co',
+                           css_selector='.field-content')
     elmanduco = Newspaper(nombre='El Manduco', ciudad='',
                           url='https://www.elmanduco.com.co',
-                          css_selector='.article-title a',
-                          method='css_selector')
+                          css_selector='.article-title a')
     semana = Newspaper(nombre='Semana', ciudad='',
                        url='https://www.semana.com',
-                       css_selector='h2.card-title',
-                       method='css_selector')
+                       css_selector='h2.card-title')
     publimetro = Newspaper(nombre='Publimetro', ciudad='',
                            url='https://www.publimetro.co/',
-                           css_selector='h2',
-                           method='css_selector')
+                           css_selector='h2')
     pulzo = Newspaper(nombre='Pulzo', ciudad='',
                       url='https://www.pulzo.com',
-                      css_selector="h2[itemprop='headline']",
-                      method='css_selector')
+                      css_selector="h2[itemprop='headline']")
     larepublica = Newspaper(nombre='La Republica', ciudad='',
                             url='https://www.larepublica.co',
                             css_selector='.agriculturaSect, .economiaSect, .globoeconomiaSect, .empresasSect, '
-                                         '.ocioSect, .actualidadSect, .consumidorSect, .finanzasSect, .internet-economySect, '
-                                         '.ganaderiaSect, .climaSect, .caja-fuerteSect',
-                            method='css_selector')
+                                         '.ocioSect, .actualidadSect, .consumidorSect, .finanzasSect, '
+                                         '.internet-economySect, .ganaderiaSect, .climaSect, .caja-fuerteSect')
 
     newspapers_list = [elheraldo, zonacero, elpilon, eluniversal,
-                       diariodelcesar, diariodelmag, diariodelnorte,
+                       diariodelcesar, elinformador, diariodelmag, diariodelnorte,
                        laopinion, eltiempo, elcolombiano, lapatria,
                        elpais, elmundo, elnuevodia, elmanduco, semana,
                        publimetro, pulzo, larepublica, elespectador]

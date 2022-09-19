@@ -53,16 +53,19 @@ def url_analyse(url: str):
     :param url: ex: www.bbc.uk
     :return:    bbc
     >>> url_analyse('http://www.elheraldo.co')
-    'elheraldo'
+    'elheraldo.co'
     >>> url_analyse('http://www.otrosite.com.co')
-    'otrosite'
+    'otrosite.com.co'
     >>> url_analyse('www.site.com.co')
-    'site'
+    'site.com.co'
+    >>> url_analyse('https://www.diariodelnorte.net')
+    'diariodelnorte.net'
     """
     # newurl = url[url.index('www') + 4::]
     # newurl = newurl.split('.')
     # return newurl[0]
-    return re.findall('[https?:\/\/]?(www\.)?([a-zA-Z0-9]+)+\.[\w+.]+', url)[0][-1]
+    dominio = re.findall('[https?:\/\/]?(www\.)?([a-zA-Z0-9]+)+\.[\w+.]+', url)[0][-1]
+    return url[url.find(dominio):]
 
 def clean_text(text: str):
     """
@@ -75,9 +78,12 @@ def clean_text(text: str):
     ''
     >>> clean_text('EN VIVO Paro Nacional: siga las marchas')
     'Paro Nacional: siga las marchas'
+    >>> clean_text('En vivo: funeral de la Reina Isabel II en Reino Unido')
+    'funeral de la Reina Isabel II en Reino Unido'
     """
-    removewords = ['[Video]', '  ', '\n', '\t', '(VIDEO)', '(Video)', 'En Vivo |', 'Video |', 'VIDEO |', '[Videos]',
-                   'Videos', 'Video', 'Video:', 'En Vivo', 'EN VIVO', '[Fotos]']
+    removewords = ['[Video]', '  ', '\n', '\t', '(VIDEO)', '(Video)', 'En Vivo |',
+                   'En vivo:', 'Video:', 'Video |', 'VIDEO |', '[Videos]',
+                   'Videos', 'Video', 'En Vivo', 'EN VIVO', '[Fotos]']
     for i in removewords:
         text = text.replace(i, "")
     text = text.lstrip(' ').rstrip(' ')
