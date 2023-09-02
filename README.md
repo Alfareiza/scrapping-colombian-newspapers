@@ -4,6 +4,10 @@
 
 :shipit: Scrapping information of Colombian newspapers.
 
+<h1 align="center" >
+    <img src="https://github.com/Alfareiza/scrapping-colombian-newspapers/assets/63620799/fea7d674-f55c-4eda-bd6b-ae169972672a">
+</h1>
+
 ## Getting Started
 
 Repository that captures information from Colombian newspapers (list of newspapers), then generates a csv with all the
@@ -68,8 +72,5 @@ At the moment, the list of scrapped sites is [20]:
 - pulzo
 - larepublica
 
-<h1 align="center" >
-    <img src="https://user-images.githubusercontent.com/63620799/170513852-4a474ba8-9d6e-4d7f-8674-e3ac64087caf.gif">
-</h1>
 
 
